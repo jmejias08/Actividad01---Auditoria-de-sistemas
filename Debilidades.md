@@ -3,7 +3,7 @@
 ## CLIENTE:
 
 ### DDL
-```
+```sql
 CREATE TABLE actividad01.cliente( 
 	 id             INTEGER  NOT NULL , 
 	 nombre         VARCHAR (100)  NOT NULL , 
@@ -19,7 +19,7 @@ ALTER TABLE actividad01.cliente ADD CONSTRAINT pk_cliente PRIMARY KEY ( id );
 ```
 
 ### DML
-```
+```sql
 INSERT INTO actividad01.cliente (id,nombre, correo, fecha_creacion) 
 VALUES
 (218,'Harold Shipman', 'harold.shipman@correo.uk', '1946-01-14'),
@@ -41,7 +41,7 @@ VALUES
 ## PRODUCTO: 
 
 ### DDL 
-```
+```sql
 CREATE TABLE actividad01.producto ( 
 	 id          SERIAL  NOT NULL , 
 	 codigo      VARCHAR (25)  NOT NULL , 
@@ -61,7 +61,7 @@ ALTER TABLE actividad01.producto ADD CONSTRAINT ck_producto_existencia CHECK (ex
 ```
 
 ### DML
-```
+```sql
 INSERT INTO actividad01.producto (id,codigo, nombre, descripcion, precio, existencia)
 VALUES
 (2,'PRD-0001', 'Coca Cola 2L', 'Co Cola en presentación de 2 Litros no retornable', 1800, 6),
@@ -98,13 +98,14 @@ VALUES
 * 8. Integridad de Dominio?. El registro con id 3 tiene un precio de 0, lo cual no es lógico para un producto en venta.
 * 9. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo que podría generar problemas de almacenamiento y rendimiento.
 * 10. Integridad de Atributo. La descripción debería de tener una restricción para evitar valores nulos o en blanco.	
+* 11. Integridad de Atributo. La columna existencias deberia tener una restriccion que evite tener valores negativos
 
 
 
 ## PEDIDO
 
 ### DDL:
-```
+```sql
 CREATE TABLE actividad01.pedido ( 
  	id          SERIAL  NOT NULL , 
  	id_cliente  INTEGER  NOT NULL , 
@@ -120,7 +121,7 @@ ALTER TABLE actividad01.pedido ADD CONSTRAINT pk_pedido PRIMARY KEY ( id ) ;
 ```
 
 ### DML:
-```
+```sql
 INSERT INTO actividad01.pedido (id, id_cliente, fecha, monto_total)
 VALUES
 (1, 193, '2025-01-15', 151),
@@ -135,8 +136,8 @@ SELECT * FROM actividad01.pedido p;
 ```
 
 ### Debilidades encontradas:
-* 11. Integridad de Atributo. Existen pedido con un monto igual a 0, lo cual podría tener una restricción de tipo CHECK que valide que sea
-* 12. Integridad de Usuario o Negocio:: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
+* 12. Integridad de Atributo. Existen pedido con un monto igual a 0, lo cual podría tener una restricción de tipo CHECK que valide que sea mayor a 0
+* 13. Integridad de Usuario o Negocio:: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
 
 
 
@@ -144,7 +145,7 @@ SELECT * FROM actividad01.pedido p;
 ## PEDIDO DETALLE
 
 ### DDL:
-```
+```sql
 CREATE TABLE actividad01.pedido_detalle( 
 	id          SERIAL  NOT NULL , 
  	id_pedido   INTEGER  NOT NULL , 
@@ -173,7 +174,7 @@ ALTER TABLE actividad01.pedido_detalle
 ```
 
 ### DML
-```
+```sql
 INSERT INTO actividad01.pedido_detalle (id_pedido, id_producto, cantidad, subtotal)
 VALUES
 (1, 17, 2, 31),
@@ -190,7 +191,7 @@ VALUES
 ```
 
 ### Debilidades encontradas:
-* 13. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
-* 14. Integridad de dominio. La columna cantidad permite valores negativos, lo cual no tiene sentido en la lógica de negocio. Se soluciona añadiendo una restricción CHECK para asegurar que la existencia sea mayor o igual a 0.
+* 14. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
+* 15. Integridad de dominio. La columna cantidad permite valores negativos, lo cual no tiene sentido en la lógica de negocio. Se soluciona añadiendo una restricción CHECK para asegurar que la existencia sea mayor o igual a 0.
 
 
