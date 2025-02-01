@@ -3,11 +3,12 @@
 ## CLIENTE:
 
 ### DDL
+
 ```sql
-CREATE TABLE actividad01.cliente( 
-	 id             INTEGER  NOT NULL , 
-	 nombre         VARCHAR (100)  NOT NULL , 
-	 correo         VARCHAR (100)  NOT NULL , 
+CREATE TABLE actividad01.cliente(
+	 id             INTEGER  NOT NULL ,
+	 nombre         VARCHAR (100)  NOT NULL ,
+	 correo         VARCHAR (100)  NOT NULL ,
 	 fecha_creacion DATE DEFAULT now()  NOT NULL);
 
 COMMENT ON COLUMN actividad01.cliente.id IS 'Id de la tabla';
@@ -19,8 +20,9 @@ ALTER TABLE actividad01.cliente ADD CONSTRAINT pk_cliente PRIMARY KEY ( id );
 ```
 
 ### DML
+
 ```sql
-INSERT INTO actividad01.cliente (id,nombre, correo, fecha_creacion) 
+INSERT INTO actividad01.cliente (id,nombre, correo, fecha_creacion)
 VALUES
 (218,'Harold Shipman', 'harold.shipman@correo.uk', '1946-01-14'),
 (193,'Luis Alfredo Garavito', 'luis.alfredo.garavito@correo.co','1957-01-25'),
@@ -29,25 +31,25 @@ VALUES
 (100,'Javed Iqbal', 'niels.högel@correo.de','1956-01-01'),
 (85,'Niels Högel', 'niels.högel@correo.de','2025-02-26');
 ```
+
 ### Debilidades encontradas:
 
-* 1. Integridad de entidad. Aunque la clave primaria está definida, no se utiliza un mecanismo automático (como una secuencia o autoincremento) para generar los valores de id.
-* 2. Integridad de atributo. No se valida la estructura del correo electrónico en la columna correo.
-* 3. Integridad de dominio?. Las fechas de creación deberían ser menores o iguales a la fecha actual para reflejar datos consistentes y * válidos en la lógica de negocio.
-* 4. Integridad de dominio. Los valores de la columna correo no son únicos, ya que aparece duplicado en los registros con id 100 y 8.
+- 1. Integridad de entidad. Aunque la clave primaria está definida, no se utiliza un mecanismo automático (como una secuencia o autoincremento) para generar los valores de id.
+- 2. Integridad de atributo. No se valida la estructura del correo electrónico en la columna correo.
+- 3. Integridad de dominio?. Las fechas de creación deberían ser menores o iguales a la fecha actual para reflejar datos consistentes y \* válidos en la lógica de negocio.
+- 4. Integridad de dominio. Los valores de la columna correo no son únicos, ya que aparece duplicado en los registros con id 100 y 8.
 
+## PRODUCTO:
 
+### DDL
 
-## PRODUCTO: 
-
-### DDL 
 ```sql
-CREATE TABLE actividad01.producto ( 
-	 id          SERIAL  NOT NULL , 
-	 codigo      VARCHAR (25)  NOT NULL , 
-	 nombre      VARCHAR (100)  , 
-	 descripcion VARCHAR (10000)  , 
-	 precio      NUMERIC (10,2) DEFAULT 0  NOT NULL , 
+CREATE TABLE actividad01.producto (
+	 id          SERIAL  NOT NULL ,
+	 codigo      VARCHAR (25)  NOT NULL ,
+	 nombre      VARCHAR (100)  ,
+	 descripcion VARCHAR (10000)  ,
+	 precio      NUMERIC (10,2) DEFAULT 0  NOT NULL ,
 	 existencia  INTEGER DEFAULT 0  NOT NULL);
 
 COMMENT ON COLUMN actividad01.producto.id IS 'Id de la tabla';
@@ -61,6 +63,7 @@ ALTER TABLE actividad01.producto ADD CONSTRAINT ck_producto_existencia CHECK (ex
 ```
 
 ### DML
+
 ```sql
 INSERT INTO actividad01.producto (id,codigo, nombre, descripcion, precio, existencia)
 VALUES
@@ -91,25 +94,25 @@ VALUES
 (31,'PROD020', 'Webcam Logitech', 'Webcam Full HD con autofoco y micrófono estéreo', 75.00, 15);
 ```
 
-### Debilidades encontradas: 
-* 5. Integridad de Entidad. En la tabla producto no existe una restricción de clave primaria.
-* 6. Integridad de ¿?. En la tabla producto en la columna código debería ser único para cada producto, ya que identifica productos específicos.
-* 7. Integridad de Atributo. La columna nombre debería tener un valor válido y no permitir valores vacíos, ya que es esencial para identificar y describir el producto.
-* 8. Integridad de Dominio?. El registro con id 3 tiene un precio de 0, lo cual no es lógico para un producto en venta.
-* 9. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo que podría generar problemas de almacenamiento y rendimiento.
-* 10. Integridad de Atributo. La descripción debería de tener una restricción para evitar valores nulos o en blanco.	
-* 11. Integridad de Atributo. La columna existencias deberia tener una restriccion que evite tener valores negativos
+### Debilidades encontradas:
 
-
+- 5. Integridad de Entidad. En la tabla producto no existe una restricción de clave primaria.
+- 6. Integridad de ¿?. En la tabla producto en la columna código debería ser único para cada producto, ya que identifica productos específicos.
+- 7. Integridad de Atributo. La columna nombre debería tener un valor válido y no permitir valores vacíos, ya que es esencial para identificar y describir el producto.
+- 8. Integridad de Dominio?. El registro con id 3 tiene un precio de 0, lo cual no es lógico para un producto en venta.
+- 9. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo que podría generar problemas de almacenamiento y rendimiento.
+- 10. Integridad de Atributo. La descripción debería de tener una restricción para evitar valores nulos o en blanco.
+- 11. Integridad de Atributo. La columna existencias deberia tener una restriccion que evite tener valores negativos
 
 ## PEDIDO
 
 ### DDL:
+
 ```sql
-CREATE TABLE actividad01.pedido ( 
- 	id          SERIAL  NOT NULL , 
- 	id_cliente  INTEGER  NOT NULL , 
- 	fecha       DATE  DEFAULT now() NOT NULL , 
+CREATE TABLE actividad01.pedido (
+ 	id          SERIAL  NOT NULL ,
+ 	id_cliente  INTEGER  NOT NULL ,
+ 	fecha       DATE  DEFAULT now() NOT NULL ,
  	monto_total NUMERIC (10,2)  NOT NULL);
 
 COMMENT ON COLUMN actividad01.pedido.id IS 'Id de la tabla';
@@ -121,6 +124,7 @@ ALTER TABLE actividad01.pedido ADD CONSTRAINT pk_pedido PRIMARY KEY ( id ) ;
 ```
 
 ### DML:
+
 ```sql
 INSERT INTO actividad01.pedido (id, id_cliente, fecha, monto_total)
 VALUES
@@ -136,21 +140,20 @@ SELECT * FROM actividad01.pedido p;
 ```
 
 ### Debilidades encontradas:
-* 12. Integridad de Atributo. Existen pedido con un monto igual a 0, lo cual podría tener una restricción de tipo CHECK que valide que sea mayor a 0
-* 13. Integridad de Usuario o Negocio:: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
 
-
-
+- 12. Integridad de Atributo. Existen pedido con un monto igual a 0, lo cual podría tener una restricción de tipo CHECK que valide que sea mayor a 0
+- 13. Integridad de Usuario o Negocio:: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
 
 ## PEDIDO DETALLE
 
 ### DDL:
+
 ```sql
-CREATE TABLE actividad01.pedido_detalle( 
-	id          SERIAL  NOT NULL , 
- 	id_pedido   INTEGER  NOT NULL , 
- 	id_producto INTEGER  NOT NULL , 
- 	cantidad    INTEGER  NOT NULL , 
+CREATE TABLE actividad01.pedido_detalle(
+	id          SERIAL  NOT NULL ,
+ 	id_pedido   INTEGER  NOT NULL ,
+ 	id_producto INTEGER  NOT NULL ,
+ 	cantidad    INTEGER  NOT NULL ,
  	subtotal    NUMERIC (10,2)  NOT NULL);
 
 COMMENT ON COLUMN actividad01.pedido_detalle.id IS 'Id de la tabla';
@@ -164,16 +167,17 @@ ALTER TABLE actividad01.pedido_detalle ADD CONSTRAINT ck_pedido_detalle_cantidad
 ALTER TABLE actividad01.pedido_detalle ADD CONSTRAINT ck_pedido_detalle_subtotal CHECK (subtotal > 0);
 
 -- Llaves foráneas
-ALTER TABLE actividad01.pedido 
-    ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (id_cliente) 
+ALTER TABLE actividad01.pedido
+    ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (id_cliente)
     REFERENCES actividad01.cliente (id);
 
-ALTER TABLE actividad01.pedido_detalle 
-    ADD CONSTRAINT fk_pedido_detalle_pedido FOREIGN KEY (id_pedido) 
+ALTER TABLE actividad01.pedido_detalle
+    ADD CONSTRAINT fk_pedido_detalle_pedido FOREIGN KEY (id_pedido)
     REFERENCES actividad01.pedido (id);
 ```
 
 ### DML
+
 ```sql
 INSERT INTO actividad01.pedido_detalle (id_pedido, id_producto, cantidad, subtotal)
 VALUES
@@ -191,7 +195,6 @@ VALUES
 ```
 
 ### Debilidades encontradas:
-* 14. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
-* 15. Integridad de dominio. La columna cantidad permite valores negativos, lo cual no tiene sentido en la lógica de negocio. Se soluciona añadiendo una restricción CHECK para asegurar que la existencia sea mayor o igual a 0.
 
-
+- 14. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
+- 15. Integridad de dominio. La columna cantidad permite valores negativos, lo cual no tiene sentido en la lógica de negocio. Se soluciona añadiendo una restricción CHECK para asegurar que la existencia sea mayor o igual a 0.
