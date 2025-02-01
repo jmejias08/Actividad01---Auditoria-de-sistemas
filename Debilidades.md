@@ -34,10 +34,10 @@ VALUES
 
 ### Debilidades encontradas:
 
-- 1. Integridad de entidad. Aunque la clave primaria está definida, no se utiliza un mecanismo automático (como una secuencia o autoincremento) para generar los valores de id.
-- 2. Integridad de atributo. No se valida la estructura del correo electrónico en la columna correo.
-- 3. Integridad de dominio?. Las fechas de creación deberían ser menores o iguales a la fecha actual para reflejar datos consistentes y \* válidos en la lógica de negocio.
-- 4. Integridad de dominio. Los valores de la columna correo no son únicos, ya que aparece duplicado en los registros con id 100 y 8.
+1. Integridad de entidad. Aunque la clave primaria está definida, no se utiliza un mecanismo automático (como una secuencia o autoincremento) para generar los valores de id. Ya que depende de la intervención manual y la no nulidad y además no garantiza consistencia en la generación de claves primarias.
+2. Integridad de Entidad y Claves. El correo electrónico debe ser único para cada cliente. Hace falta una restricción de unicidad.
+3. Integridad de Dominio. El campo correo no tiene una restricción que valide el formato del correo electrónico y la longitud es inadecuada, ya que el máximo para un correo electronico es de 320 caracteres, por lo que en este caso podría estar dejando a posibles usuarios sin poder ingresar.
+4. Integridad de Dominio. El valor de fecha_creacion no está dentro del dominio válido (fechas pasadas o la fecha actual). Ya que hay fechas futuras y extremadamente antiguas
 
 ## PRODUCTO:
 
@@ -96,13 +96,12 @@ VALUES
 
 ### Debilidades encontradas:
 
-- 5. Integridad de Entidad. En la tabla producto no existe una restricción de clave primaria.
-- 6. Integridad de ¿?. En la tabla producto en la columna código debería ser único para cada producto, ya que identifica productos específicos.
-- 7. Integridad de Atributo. La columna nombre debería tener un valor válido y no permitir valores vacíos, ya que es esencial para identificar y describir el producto.
-- 8. Integridad de Dominio?. El registro con id 3 tiene un precio de 0, lo cual no es lógico para un producto en venta.
-- 9. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo que podría generar problemas de almacenamiento y rendimiento.
-- 10. Integridad de Atributo. La descripción debería de tener una restricción para evitar valores nulos o en blanco.
-- 11. Integridad de Atributo. La columna existencias deberia tener una restriccion que evite tener valores negativos
+5. Integridad de Entidad y Claves. En la tabla producto no existe una restricción de clave primaria.
+6. Integridad de Entidad y Clave. En la tabla producto en la columna código debería ser único para cada producto, ya que identifica productos específicos.
+7. Integridad de Atributo. El campo nombre está definido como VARCHAR(100) y permite valores nulos. Esto es problemático, ya que el nombre de un producto es un dato esencial y no debería ser nulo.
+8. Integridad de Dominio. El campo precio tiene un valor predeterminado de 0, pero no hay una restricción que impida que el precio sea negativo. Esto es problemático, ya que un precio negativo no tiene sentido en el contexto de un producto.
+9. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo cual es excesivo para los posibles valores del campo.
+10. Integridad de Atributo. La columna descripción permite valores nulos o en blanco, lo que podría generar inconsistencias en la base de datos.
 
 ## PEDIDO
 
@@ -141,8 +140,9 @@ SELECT * FROM actividad01.pedido p;
 
 ### Debilidades encontradas:
 
-- 12. Integridad de Atributo. Existen pedido con un monto igual a 0, lo cual podría tener una restricción de tipo CHECK que valide que sea mayor a 0
-- 13. Integridad de Usuario o Negocio:: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
+11. Integridad de Dominio. El monto total debe estar dentro de un dominio válido (valores positivos mayores que cero)
+12. Integridad de Usuario o Negocio: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
+13. Integridad de Dominio. El campo fecha tiene un valor predeterminado (now()), pero no hay una restricción que impida la inserción de fechas futuras. Esto es problemático, ya que un pedido no puede tener una fecha futura, ni una fecha menor a la creación de la empresa.
 
 ## PEDIDO DETALLE
 
@@ -196,5 +196,5 @@ VALUES
 
 ### Debilidades encontradas:
 
-- 14. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
-- 15. Integridad de dominio. La columna cantidad permite valores negativos, lo cual no tiene sentido en la lógica de negocio. Se soluciona añadiendo una restricción CHECK para asegurar que la existencia sea mayor o igual a 0.
+14. Integridad referencial. En la tabla pedido_detalle no establece una restriccion de llave foranea para hacer referencia a los productos.
+15. Integridad de usuario o negocio. No existe una restricción que garantice que el 'subtotal' de cada línea de detalle sea coherente con la cantidad y el precio del producto.
