@@ -36,8 +36,8 @@ VALUES
 
 1. Integridad de entidad. Aunque la clave primaria está definida, no se utiliza un mecanismo automático (como una secuencia o autoincremento) para generar los valores de id. Ya que depende de la intervención manual y la no nulidad y además no garantiza consistencia en la generación de claves primarias.
 2. Integridad de Entidad y Claves. El correo electrónico debe ser único para cada cliente. Hace falta una restricción de unicidad.
-3. Integridad de Dominio. El campo correo no tiene una restricción que valide el formato del correo electrónico 
-4. la longitud es inadecuada, ya que el máximo para un correo electronico es de 320 caracteres, por lo que en este caso podría estar dejando a posibles usuarios sin poder ingresar.
+3. Integridad de usuario o negocio. El campo correo no tiene una restricción que valide el formato del correo electrónico
+4. Integridad de Dominio. La longitud es inadecuada, ya que el máximo para un correo electronico es de 320 caracteres, por lo que en este caso podría estar dejando a posibles usuarios sin poder ingresar.
 5. Integridad de Dominio. El valor de fecha_creacion no está dentro del dominio válido (fechas pasadas o la fecha actual). Ya que hay fechas futuras y extremadamente antiguas
 
 ## Hallazgos:
@@ -55,6 +55,7 @@ VALUES
 **Recomendación:** Implementar un mecanismo automático como una secuencia o autoincremento para la generación de valores de id.
 
 **Solución técnica:**
+
 ```sql
 CREATE SEQUENCE actividad01.cliente_id_seq;
 ALTER TABLE actividad01.cliente ALTER COLUMN id SET DEFAULT nextval('actividad01.cliente_id_seq');
@@ -73,6 +74,7 @@ ALTER TABLE actividad01.cliente ALTER COLUMN id SET DEFAULT nextval('actividad01
 **Recomendación:** Agregar una restricción de unicidad al campo correo.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.cliente ADD CONSTRAINT uq_cliente_correo UNIQUE (correo);
 ```
@@ -90,6 +92,7 @@ ALTER TABLE actividad01.cliente ADD CONSTRAINT uq_cliente_correo UNIQUE (correo)
 **Recomendación:** Implementar una restricción que valide el formato del correo electrónico.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.cliente ADD CONSTRAINT ck_cliente_correo_formato CHECK (correo ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 ```
@@ -107,6 +110,7 @@ ALTER TABLE actividad01.cliente ADD CONSTRAINT ck_cliente_correo_formato CHECK (
 **Recomendación:** Aumentar la longitud del campo correo a 320 caracteres.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.cliente ALTER COLUMN correo TYPE VARCHAR(320);
 ```
@@ -124,6 +128,7 @@ ALTER TABLE actividad01.cliente ALTER COLUMN correo TYPE VARCHAR(320);
 **Recomendación:** Implementar una restricción que valide el rango de fechas.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.cliente ADD CONSTRAINT ck_cliente_fecha_creacion CHECK (fecha_creacion <= CURRENT_DATE AND fecha_creacion >= '1900-01-01');
 ```
@@ -188,7 +193,7 @@ VALUES
 6. Integridad de Entidad y Claves. En la tabla producto no existe una restricción de clave primaria.
 7. Integridad de Entidad y Clave. En la tabla producto en la columna código debería ser único para cada producto, ya que identifica productos específicos.
 8. Integridad de Atributo. El campo nombre está definido como VARCHAR(100) y permite valores nulos. Esto es problemático, ya que el nombre de un producto es un dato esencial y no debería ser nulo.
-9. Integridad de Dominio. El campo precio tiene un valor predeterminado de 0, pero no hay una restricción que impida que el precio sea negativo. Esto es problemático, ya que un precio negativo no tiene sentido en el contexto de un producto.
+9. Integridad de Atributo. El campo precio tiene un valor predeterminado de 0, pero no hay una restricción que impida que el precio sea negativo. Esto es problemático, ya que un precio negativo no tiene sentido en el contexto de un producto.
 10. Integridad de Dominio. La descripción de los productos permite valores extremadamente largos (hasta 10,000 caracteres), lo cual es excesivo para los posibles valores del campo.
 11. Integridad de Atributo. La columna descripción permite valores nulos o en blanco, lo que podría generar inconsistencias en la base de datos.
 
@@ -207,6 +212,7 @@ VALUES
 **Recomendación:** Definir una clave primaria en la tabla producto.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ADD CONSTRAINT pk_producto PRIMARY KEY (id);
 ```
@@ -224,6 +230,7 @@ ALTER TABLE actividad01.producto ADD CONSTRAINT pk_producto PRIMARY KEY (id);
 **Recomendación:** Agregar una restricción de unicidad al campo código.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ADD CONSTRAINT uq_producto_codigo UNIQUE (codigo);
 ```
@@ -241,6 +248,7 @@ ALTER TABLE actividad01.producto ADD CONSTRAINT uq_producto_codigo UNIQUE (codig
 **Recomendación:** Modificar el campo nombre para que no permita valores nulos.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ALTER COLUMN nombre SET NOT NULL;
 ```
@@ -258,6 +266,7 @@ ALTER TABLE actividad01.producto ALTER COLUMN nombre SET NOT NULL;
 **Recomendación:** Implementar una restricción que valide que el precio sea mayor o igual a cero.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ADD CONSTRAINT ck_producto_precio CHECK (precio >= 0);
 ```
@@ -275,6 +284,7 @@ ALTER TABLE actividad01.producto ADD CONSTRAINT ck_producto_precio CHECK (precio
 **Recomendación:** Reducir la longitud máxima del campo descripción.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ALTER COLUMN descripcion TYPE VARCHAR(1000);
 ```
@@ -292,6 +302,7 @@ ALTER TABLE actividad01.producto ALTER COLUMN descripcion TYPE VARCHAR(1000);
 **Recomendación:** Modificar el campo descripción para que no permita valores nulos o en blanco.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.producto ALTER COLUMN descripcion SET NOT NULL;
 ```
@@ -333,7 +344,7 @@ SELECT * FROM actividad01.pedido p;
 
 ### Debilidades encontradas:
 
-12. Integridad de Dominio. El monto total debe estar dentro de un dominio válido (valores positivos mayores que cero)
+12. Integridad de Atributo. El monto total debe estar dentro de un dominio válido (valores positivos mayores que cero)
 13. Integridad de Usuario o Negocio: No se valida que el monto_total de un pedido sea coherente con los subtotales de los detalles del pedido. Esto puede llevar a inconsistencias en la lógica de negocio. Y se puede solucionar implementando un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
 14. Integridad de Dominio. El campo fecha tiene un valor predeterminado (now()), pero no hay una restricción que impida la inserción de fechas futuras. Esto es problemático, ya que un pedido no puede tener una fecha futura, ni una fecha menor a la creación de la empresa.
 
@@ -352,6 +363,7 @@ SELECT * FROM actividad01.pedido p;
 **Recomendación:** Implementar una restricción que valide que el monto_total sea mayor que cero.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.pedido ADD CONSTRAINT ck_pedido_monto_total CHECK (monto_total > 0);
 ```
@@ -369,6 +381,7 @@ ALTER TABLE actividad01.pedido ADD CONSTRAINT ck_pedido_monto_total CHECK (monto
 **Recomendación:** Implementar un trigger o procedimiento almacenado que calcule y valide el monto_total basado en los subtotales de los detalles del pedido.
 
 **Solución técnica:**
+
 ```sql
 CREATE OR REPLACE FUNCTION validar_monto_total_pedido() RETURNS TRIGGER AS $$
 BEGIN
@@ -397,6 +410,7 @@ FOR EACH ROW EXECUTE FUNCTION validar_monto_total_pedido();
 **Recomendación:** Implementar una restricción que valide el rango de fechas.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.pedido ADD CONSTRAINT ck_pedido_fecha CHECK (fecha <= CURRENT_DATE);
 ```
@@ -472,6 +486,7 @@ VALUES
 **Recomendación:** Definir una llave foránea en la tabla pedido_detalle que haga referencia a la tabla producto.
 
 **Solución técnica:**
+
 ```sql
 ALTER TABLE actividad01.pedido_detalle
     ADD CONSTRAINT fk_pedido_detalle_producto FOREIGN KEY (id_producto)
@@ -491,6 +506,7 @@ ALTER TABLE actividad01.pedido_detalle
 **Recomendación:** Implementar un trigger o procedimiento almacenado que valide la coherencia del subtotal.
 
 **Solución técnica:**
+
 ```sql
 CREATE OR REPLACE FUNCTION validar_subtotal_pedido_detalle() RETURNS TRIGGER AS $$
 BEGIN
@@ -519,6 +535,7 @@ FOR EACH ROW EXECUTE FUNCTION validar_subtotal_pedido_detalle();
 **Recomendación:** Implementar un proceso que valide la cantidad de unidades en stock y realice el rebajo correspondiente al registrar un pedido.
 
 **Solución técnica:**
+
 ```sql
 CREATE OR REPLACE FUNCTION validar_stock_pedido_detalle() RETURNS TRIGGER AS $$
 BEGIN
